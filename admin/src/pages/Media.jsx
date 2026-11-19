@@ -23,7 +23,8 @@ export default function Media() {
     load();
     api.get("/admin/deities").then((r) => setDeities(r.data));
     api.get("/admin/puja-categories").then((r) => setCats(r.data));
-    api.get("/admin/users").then((r) => setUsers(r.data));
+    // FIX: Added limit: 200 so the dropdown shows all users
+    api.get("/admin/users", { params: { limit: 200 } }).then((r) => setUsers(r.data));
   }, []);
 
   const upload = async () => {
@@ -71,7 +72,7 @@ export default function Media() {
     load();
   };
 
-  const userLabel = (u) => `${u.full_name || u.name || ""} (${u.email}) #${u.id}`;
+  const userLabel = (u) => `${u.name || ""} (${u.email}) #${u.id}`;
 
   return (
     <>

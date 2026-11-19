@@ -5,6 +5,8 @@ import Dashboard from "./pages/Dashboard";
 import Deities from "./pages/Deities";
 import Categories from "./pages/Categories";
 import Media from "./pages/Media";
+import Users from "./pages/Users";
+import WeekdayMapping from "./pages/WeekdayMapping";
 
 function Protected({ children }) {
   return localStorage.getItem("admin_token") ? children : <Navigate to="/login" replace />;
@@ -16,9 +18,11 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Protected><AdminLayout /></Protected>}>
         <Route index element={<Dashboard />} />
+        <Route path="users" element={<Users />} />
+        <Route path="media" element={<Media />} />
         <Route path="deities" element={<Deities />} />
         <Route path="categories" element={<Categories />} />
-        <Route path="media" element={<Media />} />
+        <Route path="weekdays" element={<WeekdayMapping />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
