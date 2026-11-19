@@ -194,6 +194,19 @@ async def upload_media(
     if status not in ("draft", "active", "inactive"):
         raise HTTPException(400, "status must be draft, active or inactive")
 
+    # Swagger sends 0 for empty id fields, so treat 0 as "not provided".
+    # Do NOT do this for weekday, because 0 is Monday.
+    deity_id = deity_id or None
+    puja_category_id = puja_category_id or None
+
+    if deity_id is not None and not db.get(Deity, deity_id):
+        raise HTTPException(400, "Deity not found")
+    if puja_category_id is not None and not db.get(PujaCategory, puja_category_id):
+        raise HTTPException(400, "Puja category not found")
+    if weekday is not None and not (0 <= weekday <= 6):
+        raise HTTPException(400, "weekday must be between 0 (Monday) and 6 (Sunday)")
+
+    # All validation is done before the upload, so a rejected request leaves no orphan file in the bucket
     try:
         path = upload_file(await file.read(), file.filename, file.content_type or "application/octet-stream")
     except RuntimeError as e:
@@ -206,7 +219,6 @@ async def upload_media(
     db.commit()
     db.refresh(m)
     return media_out(m)
-
 
 @router.get("/media")
 def list_all_media(db: Session = Depends(get_db)):
